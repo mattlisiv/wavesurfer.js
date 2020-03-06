@@ -146,6 +146,24 @@ export default function fetchFile(options) {
     };
 
     fetch(fetchRequest, fetchOptions)
+        .then(({ body }) => {
+            return body.pipeTo(
+                new WritableStream({
+                    write: chunk => {
+                        // eslint-disable-next-line no-console
+                        console.log('Got part', chunk);
+                    },
+                    abort: () => {
+                        // eslint-disable-next-line no-console
+                        console.log('Aborted');
+                    },
+                    close: () => {
+                        // eslint-disable-next-line no-console
+                        console.log('Got everything');
+                    }
+                })
+            );
+        })
         .then(response => {
             // store response reference
             instance.response = response;
